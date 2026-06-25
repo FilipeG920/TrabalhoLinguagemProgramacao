@@ -1,0 +1,96 @@
+<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><title>Roteiro de Apresentação — Nota Máxima</title><style>
+@page { size: A4; margin: 16mm 14mm; }
+* { box-sizing: border-box; }
+body { font-family: Inter, Arial, sans-serif; color: #172033; background: #fff; line-height: 1.45; font-size: 10.5pt; }
+h1, h2, h3 { color: #0f172a; page-break-after: avoid; }
+h1 { font-size: 24pt; margin: 0 0 6mm; border-bottom: 3px solid #2563eb; padding-bottom: 3mm; }
+h2 { font-size: 16pt; margin-top: 8mm; border-left: 4px solid #2563eb; padding-left: 3mm; }
+h3 { font-size: 12.5pt; margin-top: 5mm; color: #1d4ed8; }
+p { margin: 2mm 0; }
+ul, ol { margin-top: 2mm; }
+li { margin: 1.2mm 0; }
+.cover { min-height: 245mm; display: flex; flex-direction: column; justify-content: center; text-align: center; page-break-after: always; }
+.cover h1 { border: none; font-size: 30pt; }
+.subtitle { font-size: 14pt; color: #475569; }
+.badge { display:inline-block; background:#dbeafe; color:#1e40af; border-radius:999px; padding:2mm 4mm; margin:1mm; font-weight:700; }
+.card { border:1px solid #cbd5e1; background:#f8fafc; border-radius:8px; padding:4mm; margin:4mm 0; page-break-inside: avoid; }
+.warn { border-color:#f59e0b; background:#fffbeb; }
+.good { border-color:#10b981; background:#ecfdf5; }
+.grid { display:grid; grid-template-columns: 1fr 1fr; gap:4mm; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; page-break-inside: auto; }
+tr { page-break-inside: avoid; page-break-after: auto; }
+th { background: #0f172a; color: white; font-weight: 700; }
+th, td { border: 1px solid #cbd5e1; padding: 2mm; vertical-align: top; }
+td.num { width: 12mm; text-align: right; color:#475569; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+td.code { width: 45%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; background: #020617; color: #e5e7eb; font-size: 8.8pt; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+pre { background:#020617; color:#e5e7eb; border-radius:8px; padding:4mm; white-space:pre-wrap; font-size:9pt; }
+.small { font-size: 9pt; color:#475569; }
+.break { page-break-before: always; }
+.footer-note { margin-top: 8mm; font-size: 9pt; color:#64748b; }
+</style></head><body>
+<div class='cover'>
+<h1>Roteiro de Apresentação — Nota Máxima</h1>
+<p class='subtitle'>Projeto 4 — Cálculo de Folha de Pagamento em C, Java, Haskell e Prolog</p>
+<p><span class='badge'>Paradigmas</span><span class='badge'>Correção</span><span class='badge'>Comparação crítica</span><span class='badge'>Didática</span></p>
+</div>
+<h2>Objetivo do roteiro</h2>
+<div class='card good'>Este roteiro foi pensado para uma apresentação de alto desempenho: explicar o problema, provar que as quatro soluções são equivalentes, comparar os paradigmas com critérios claros e demonstrar domínio técnico sem se perder em detalhes de sintaxe.</div>
+<h2>Estratégia para nota máxima</h2>
+<ol>
+<li><strong>Comece pelo problema, não pela linguagem:</strong> mostre entradas, saídas e fórmulas antes dos códigos.</li>
+<li><strong>Use o mesmo caso de teste como fio condutor:</strong> Ana, Bruno e Carla validam todas as versões.</li>
+<li><strong>Compare arquitetura, estado e manutenção:</strong> isso mostra compreensão de paradigmas, não apenas implementação.</li>
+<li><strong>Explique pontos fortes e fricções:</strong> reconhecer limitações demonstra maturidade técnica.</li>
+<li><strong>Finalize com critério de escolha:</strong> funcional é natural para transformação de listas; OO é boa para evolução de regras; C dá controle; Prolog explicita relações.</li>
+</ol>
+<h2>Roteiro slide a slide</h2>
+<table><thead><tr><th>Slide</th><th>Tempo</th><th>Fala sugerida e objetivo</th></tr></thead><tbody>
+<tr><td><strong>1. Abertura — Projeto 4</strong></td><td>30s</td><td>Apresentar tema, disciplina e integrantes. Começar dizendo que o objetivo não foi apenas fazer uma folha de pagamento, mas implementar a mesma regra em quatro paradigmas para comparar formas de pensar.</td></tr>
+<tr><td><strong>2. O problema</strong></td><td>35s</td><td>Explicar que a tarefa é calcular salário líquido a partir de salário bruto, dependentes e horas extras. Enfatizar que manter as regras iguais é o que torna a comparação justa.</td></tr>
+<tr><td><strong>3. Objetivo do sistema</strong></td><td>45s</td><td>Mostrar entradas e saídas. Destacar que cada implementação precisa produzir extras, INSS, IRRF, líquido, total da folha, maior e menor salário líquido.</td></tr>
+<tr><td><strong>4. Regras principais</strong></td><td>60s</td><td>Explicar as fórmulas: valor da hora, adicional de 50% nas horas extras, base de IRRF com dedução por dependente e líquido final. Dizer que INSS e IRRF usam faixas simplificadas.</td></tr>
+<tr><td><strong>5. Caso de teste obrigatório</strong></td><td>45s</td><td>Apresentar Ana, Bruno e Carla. Usar os valores como prova objetiva de equivalência: total 6564.90, maior Ana, menor Carla.</td></tr>
+<tr><td><strong>6. Quatro paradigmas</strong></td><td>35s</td><td>Introduzir a comparação: C representa o imperativo, Java a orientação a objetos, Haskell o funcional e Prolog o lógico. A mesma regra muda de arquitetura.</td></tr>
+<tr><td><strong>7. Visão geral das soluções</strong></td><td>50s</td><td>Comparar ideia central e LOC. Ressaltar que menos linhas não significa automaticamente maior simplicidade; depende da familiaridade com o paradigma.</td></tr>
+<tr><td><strong>8. C — Imperativo</strong></td><td>75s</td><td>Explicar structs, arrays de faixas, laço for, acumuladores e atualização de maior/menor. Ponto forte: fluxo explícito. Fricção: mutação e responsabilidade manual.</td></tr>
+<tr><td><strong>9. Java — Orientado a objetos</strong></td><td>75s</td><td>Explicar records para dados, interface RegraDesconto, classes RegraINSS/RegraIRRF e CalculadoraFolha. Ponto forte: extensibilidade por estratégia. Fricção: mais estrutura.</td></tr>
+<tr><td><strong>10. Haskell — Funcional</strong></td><td>75s</td><td>Explicar dados imutáveis, funções puras, listas, map para transformar funcionários em resultados e sum/maximumBy/minimumBy para agregações. Ponto forte: problema vira pipeline de dados.</td></tr>
+<tr><td><strong>11. Prolog — Lógico</strong></td><td>75s</td><td>Explicar fatos, predicados, consulta de faixas, corte para escolher a primeira faixa e maplist para aplicar a regra. Ponto forte: regras declarativas. Fricção: ordem e instanciação na aritmética.</td></tr>
+<tr><td><strong>12. Comparação das faixas</strong></td><td>50s</td><td>Mostrar que C/Haskell usam tabelas, Java encapsula em objetos/estratégias e Prolog registra fatos. Destacar impacto de manutenção ao adicionar nova faixa.</td></tr>
+<tr><td><strong>13. Estado e processamento</strong></td><td>50s</td><td>Comparar mutação explícita em C com transformação declarativa em Haskell/Prolog e streams em Java. Explicar que todos seguem funcionário → resultado → agregados.</td></tr>
+<tr><td><strong>14. O que cada paradigma evidenciou</strong></td><td>45s</td><td>Resumir brilho e fricção de cada linguagem: controle em C, extensibilidade em Java, pureza em Haskell e regras declarativas em Prolog.</td></tr>
+<tr><td><strong>15. Resultados de execução</strong></td><td>40s</td><td>Dizer que as quatro execuções foram verificadas e produziram os mesmos resultados. Esse é o principal critério de correção do trabalho.</td></tr>
+<tr><td><strong>16. Conclusão</strong></td><td>55s</td><td>Fechar defendendo que não existe paradigma universalmente melhor: existe adequação ao problema. Para este domínio, funcional ficou natural; para evolução de regras, OO é forte.</td></tr>
+<tr><td><strong>17. Perguntas</strong></td><td>20s</td><td>Encerrar com abertura para perguntas e estar pronto para explicar fórmulas, faixas, equivalência dos resultados e diferenças arquiteturais.</td></tr>
+</tbody></table>
+<h2>Fala de abertura sugerida</h2>
+<div class='card'>“Boa apresentação. Nosso trabalho implementa uma folha de pagamento em quatro linguagens: C, Java, Haskell e Prolog. O objetivo principal não é só chegar ao salário líquido correto, mas observar como cada paradigma organiza dados, regras, fluxo de cálculo e agregações. Por isso, usamos as mesmas fórmulas e o mesmo caso de teste em todas as versões.”</div>
+<h2>Pontos que precisam ser obrigatoriamente abordados</h2>
+<ul>
+<li>Entradas: nome, salário bruto, dependentes e horas extras.</li>
+<li>Saídas: extras, INSS, IRRF, líquido, total da folha, maior e menor líquido.</li>
+<li>Fórmulas de cálculo e dedução por dependente de 189,59.</li>
+<li>Uso das mesmas faixas simplificadas de INSS e IRRF em todas as implementações.</li>
+<li>Equivalência dos resultados: total 6564.90; maior salário líquido Ana; menor Carla.</li>
+<li>Diferença entre fluxo imperativo, encapsulamento orientado a objetos, composição funcional e relações lógicas.</li>
+</ul>
+<h2>Perguntas prováveis da banca e respostas curtas</h2>
+<table><thead><tr><th>Pergunta</th><th>Resposta sugerida</th></tr></thead><tbody>
+<tr><td>Por que usar quatro paradigmas?</td><td>Para mostrar que a mesma regra pode ser resolvida com modelos mentais diferentes: comandos, objetos, funções e relações.</td></tr>
+<tr><td>Qual solução ficou mais adequada?</td><td>Para este domínio, Haskell ficou natural porque a folha é uma transformação de lista. Para evolução de regras, Java é forte pelo encapsulamento.</td></tr>
+<tr><td>Como garantiram equivalência?</td><td>As tabelas de faixas, fórmulas e dados de entrada são iguais, e as quatro execuções retornam os mesmos totais e extremos.</td></tr>
+<tr><td>Por que Prolog exige cuidado?</td><td>Porque cálculos aritméticos em Prolog dependem de variáveis já instanciadas e da ordem dos predicados.</td></tr>
+<tr><td>Qual o risco em C?</td><td>Controle manual de arrays, índices e estado; é claro e eficiente, mas exige disciplina.</td></tr>
+</tbody></table>
+<h2>Fechamento sugerido</h2>
+<div class='card good'>“A principal conclusão é que paradigma não é apenas sintaxe. Ele muda como representamos o domínio, onde colocamos regras, como processamos listas e como justificamos manutenção futura. A solução correta é a que melhor combina com o tipo de problema e com as mudanças esperadas.”</div>
+<h2>Checklist final antes de apresentar</h2>
+<ul>
+<li>Não ler os slides: usar os slides como apoio visual.</li>
+<li>Repetir a ideia de equivalência dos resultados.</li>
+<li>Não gastar tempo excessivo em sintaxe; explicar intenção e arquitetura.</li>
+<li>Mostrar um ponto forte e uma fricção de cada paradigma.</li>
+<li>Encerrar com conclusão comparativa, não apenas “funcionou”.</li>
+</ul>
+</body></html>

@@ -1,0 +1,141 @@
+<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><title>Código C — Paradigma Imperativo</title><style>
+@page { size: A4; margin: 16mm 14mm; }
+* { box-sizing: border-box; }
+body { font-family: Inter, Arial, sans-serif; color: #172033; background: #fff; line-height: 1.45; font-size: 10.5pt; }
+h1, h2, h3 { color: #0f172a; page-break-after: avoid; }
+h1 { font-size: 24pt; margin: 0 0 6mm; border-bottom: 3px solid #2563eb; padding-bottom: 3mm; }
+h2 { font-size: 16pt; margin-top: 8mm; border-left: 4px solid #2563eb; padding-left: 3mm; }
+h3 { font-size: 12.5pt; margin-top: 5mm; color: #1d4ed8; }
+p { margin: 2mm 0; }
+ul, ol { margin-top: 2mm; }
+li { margin: 1.2mm 0; }
+.cover { min-height: 245mm; display: flex; flex-direction: column; justify-content: center; text-align: center; page-break-after: always; }
+.cover h1 { border: none; font-size: 30pt; }
+.subtitle { font-size: 14pt; color: #475569; }
+.badge { display:inline-block; background:#dbeafe; color:#1e40af; border-radius:999px; padding:2mm 4mm; margin:1mm; font-weight:700; }
+.card { border:1px solid #cbd5e1; background:#f8fafc; border-radius:8px; padding:4mm; margin:4mm 0; page-break-inside: avoid; }
+.warn { border-color:#f59e0b; background:#fffbeb; }
+.good { border-color:#10b981; background:#ecfdf5; }
+.grid { display:grid; grid-template-columns: 1fr 1fr; gap:4mm; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; page-break-inside: auto; }
+tr { page-break-inside: avoid; page-break-after: auto; }
+th { background: #0f172a; color: white; font-weight: 700; }
+th, td { border: 1px solid #cbd5e1; padding: 2mm; vertical-align: top; }
+td.num { width: 12mm; text-align: right; color:#475569; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+td.code { width: 45%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; background: #020617; color: #e5e7eb; font-size: 8.8pt; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+pre { background:#020617; color:#e5e7eb; border-radius:8px; padding:4mm; white-space:pre-wrap; font-size:9pt; }
+.small { font-size: 9pt; color:#475569; }
+.break { page-break-before: always; }
+.footer-note { margin-top: 8mm; font-size: 9pt; color:#64748b; }
+</style></head><body>
+<div class='cover'><h1>Código C — Paradigma Imperativo</h1><p class='subtitle'>Explicação didática linha a linha — imperativo/folha_pagamento.c</p><p><span class='badge'>Folha de Pagamento</span><span class='badge'>Paradigmas</span><span class='badge'>Linha a linha</span></p></div>
+<h2>Como ler este código</h2>
+<div class='card'>C usa comandos sequenciais, arrays, structs, laços e variáveis acumuladoras. A leitura ideal é seguir o fluxo de execução do main e das funções auxiliares.</div>
+<h2>Regras de negócio usadas</h2>
+<ul><li>valor_hora = salário_bruto / 180</li><li>extras = valor_hora × 1,5 × horas extras</li><li>base_irrf = bruto + extras - INSS - dependentes × 189,59</li><li>líquido = bruto + extras - INSS - IRRF</li><li>Os mesmos três funcionários são usados em todas as versões: Ana, Bruno e Carla.</li></ul>
+<h2>Visão geral da solução</h2>
+<div class='card good'>A implementação produz os mesmos resultados verificados nas quatro linguagens: Total da folha = 6564.90; maior líquido = Ana (3317.07); menor líquido = Carla (1245.83).</div>
+<h2>Explicação linha a linha</h2>
+<table><thead><tr><th>Linha</th><th>Código</th><th>Explicação didática</th></tr></thead><tbody>
+<tr><td class='num'>1</td><td class='code'>#include &lt;stdio.h&gt;</td><td>Importa a biblioteca padrão de entrada e saída, necessária para printf e puts.</td></tr>
+<tr><td class='num'>2</td><td class='code'>#include &lt;stddef.h&gt;</td><td>Importa definições como size_t, usado para índices e tamanhos de arrays.</td></tr>
+<tr><td class='num'>3</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>4</td><td class='code'>typedef struct {</td><td>Inicia a definição da estrutura Funcionario, que agrupa os dados de entrada.</td></tr>
+<tr><td class='num'>5</td><td class='code'>    const char *nome;</td><td>Guarda o nome do funcionário como texto constante.</td></tr>
+<tr><td class='num'>6</td><td class='code'>    double salario_bruto;</td><td>Guarda o salário bruto com casas decimais.</td></tr>
+<tr><td class='num'>7</td><td class='code'>    int dependentes;</td><td>Guarda a quantidade inteira de dependentes.</td></tr>
+<tr><td class='num'>8</td><td class='code'>    int horas_extras;</td><td>Guarda a quantidade inteira de horas extras.</td></tr>
+<tr><td class='num'>9</td><td class='code'>} Funcionario;</td><td>Fecha a struct e cria o tipo Funcionario.</td></tr>
+<tr><td class='num'>10</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>11</td><td class='code'>typedef struct {</td><td>Linha de implementação que compõe a lógica descrita no bloco atual.</td></tr>
+<tr><td class='num'>12</td><td class='code'>    double limite;</td><td>Define o teto de uma faixa de imposto.</td></tr>
+<tr><td class='num'>13</td><td class='code'>    double aliquota;</td><td>Define a porcentagem aplicada naquela faixa.</td></tr>
+<tr><td class='num'>14</td><td class='code'>} Faixa;</td><td>Fecha a estrutura Faixa, usada para limite e alíquota.</td></tr>
+<tr><td class='num'>15</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>16</td><td class='code'>typedef struct {</td><td>Linha de implementação que compõe a lógica descrita no bloco atual.</td></tr>
+<tr><td class='num'>17</td><td class='code'>    const char *nome;</td><td>Guarda o nome do funcionário como texto constante.</td></tr>
+<tr><td class='num'>18</td><td class='code'>    double bruto;</td><td>Campo numérico do resultado da folha para um funcionário.</td></tr>
+<tr><td class='num'>19</td><td class='code'>    double extras;</td><td>Campo numérico do resultado da folha para um funcionário.</td></tr>
+<tr><td class='num'>20</td><td class='code'>    double inss;</td><td>Campo numérico do resultado da folha para um funcionário.</td></tr>
+<tr><td class='num'>21</td><td class='code'>    double irrf;</td><td>Campo numérico do resultado da folha para um funcionário.</td></tr>
+<tr><td class='num'>22</td><td class='code'>    double liquido;</td><td>Campo numérico do resultado da folha para um funcionário.</td></tr>
+<tr><td class='num'>23</td><td class='code'>} Resultado;</td><td>Fecha a estrutura Resultado, que reúne todos os valores calculados.</td></tr>
+<tr><td class='num'>24</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>25</td><td class='code'>static const Faixa FAIXAS_INSS[] = {</td><td>Declara a tabela fixa de faixas do INSS.</td></tr>
+<tr><td class='num'>26</td><td class='code'>    {1412.00, 0.075},</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>27</td><td class='code'>    {2666.00, 0.090},</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>28</td><td class='code'>    {4000.00, 0.120},</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>29</td><td class='code'>    {1.0 / 0.0, 0.140}</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>30</td><td class='code'>};</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>31</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>32</td><td class='code'>static const Faixa FAIXAS_IRRF[] = {</td><td>Declara a tabela fixa de faixas do IRRF.</td></tr>
+<tr><td class='num'>33</td><td class='code'>    {2259.00, 0.000},</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>34</td><td class='code'>    {2826.00, 0.075},</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>35</td><td class='code'>    {3751.00, 0.150},</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>36</td><td class='code'>    {4664.00, 0.225},</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>37</td><td class='code'>    {1.0 / 0.0, 0.275}</td><td>Entrada da tabela: limite da faixa e alíquota correspondente.</td></tr>
+<tr><td class='num'>38</td><td class='code'>};</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>39</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>40</td><td class='code'>static double buscar_aliquota(double valor, const Faixa faixas[], size_t quantidade) {</td><td>Declara função auxiliar que encontra a alíquota correta para um valor.</td></tr>
+<tr><td class='num'>41</td><td class='code'>    for (size_t i = 0; i &lt; quantidade; i++) {</td><td>Percorre todos os elementos de um array usando índice.</td></tr>
+<tr><td class='num'>42</td><td class='code'>        if (valor &lt;= faixas[i].limite) {</td><td>Testa se o valor cabe na faixa atual.</td></tr>
+<tr><td class='num'>43</td><td class='code'>            return faixas[i].aliquota;</td><td>Retorna a alíquota da primeira faixa compatível.</td></tr>
+<tr><td class='num'>44</td><td class='code'>        }</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>45</td><td class='code'>    }</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>46</td><td class='code'>    return faixas[quantidade - 1].aliquota;</td><td>Retorno de segurança: usa a última alíquota se nenhuma faixa anterior servir.</td></tr>
+<tr><td class='num'>47</td><td class='code'>}</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>48</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>49</td><td class='code'>static double calcular_extras(const Funcionario *f) {</td><td>Função que calcula o adicional por horas extras de um funcionário.</td></tr>
+<tr><td class='num'>50</td><td class='code'>    double valor_hora = f-&gt;salario_bruto / 180.0;</td><td>Guarda o salário bruto com casas decimais.</td></tr>
+<tr><td class='num'>51</td><td class='code'>    return valor_hora * 1.5 * f-&gt;horas_extras;</td><td>Calcula o valor da hora dividindo o salário bruto por 180 horas.</td></tr>
+<tr><td class='num'>52</td><td class='code'>}</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>53</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>54</td><td class='code'>static Resultado calcular_funcionario(const Funcionario *f) {</td><td>Função principal de cálculo individual: recebe um funcionário e devolve seu Resultado.</td></tr>
+<tr><td class='num'>55</td><td class='code'>    double extras = calcular_extras(f);</td><td>Campo numérico do resultado da folha para um funcionário.</td></tr>
+<tr><td class='num'>56</td><td class='code'>    double aliquota_inss = buscar_aliquota(f-&gt;salario_bruto, FAIXAS_INSS, sizeof(FAIXAS_INSS) / sizeof(FAIXAS_INSS[0]));</td><td>Guarda o salário bruto com casas decimais.</td></tr>
+<tr><td class='num'>57</td><td class='code'>    double inss = f-&gt;salario_bruto * aliquota_inss;</td><td>Guarda o salário bruto com casas decimais.</td></tr>
+<tr><td class='num'>58</td><td class='code'>    double deducao_dependentes = f-&gt;dependentes * 189.59;</td><td>Calcula a dedução do IRRF multiplicando dependentes por 189,59.</td></tr>
+<tr><td class='num'>59</td><td class='code'>    double base_irrf = f-&gt;salario_bruto + extras - inss - deducao_dependentes;</td><td>Guarda o salário bruto com casas decimais.</td></tr>
+<tr><td class='num'>60</td><td class='code'>    if (base_irrf &lt; 0.0) base_irrf = 0.0;</td><td>Monta a base de cálculo do IRRF: bruto + extras - INSS - deduções.</td></tr>
+<tr><td class='num'>61</td><td class='code'>    double aliquota_irrf = buscar_aliquota(base_irrf, FAIXAS_IRRF, sizeof(FAIXAS_IRRF) / sizeof(FAIXAS_IRRF[0]));</td><td>Define a porcentagem aplicada naquela faixa.</td></tr>
+<tr><td class='num'>62</td><td class='code'>    double irrf = base_irrf * aliquota_irrf;</td><td>Campo numérico do resultado da folha para um funcionário.</td></tr>
+<tr><td class='num'>63</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>64</td><td class='code'>    Resultado r = {f-&gt;nome, f-&gt;salario_bruto, extras, inss, irrf, f-&gt;salario_bruto + extras - inss - irrf};</td><td>Monta a struct Resultado com todos os valores calculados, incluindo líquido.</td></tr>
+<tr><td class='num'>65</td><td class='code'>    return r;</td><td>Devolve o resultado individual calculado.</td></tr>
+<tr><td class='num'>66</td><td class='code'>}</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>67</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>68</td><td class='code'>static void imprimir_resultado(Resultado r) {</td><td>Monta a struct Resultado com todos os valores calculados, incluindo líquido.</td></tr>
+<tr><td class='num'>69</td><td class='code'>    printf(&quot;%-8s Bruto: %8.2f | Extras: %7.2f | INSS: %7.2f | IRRF: %7.2f | Liquido: %8.2f\n&quot;,</td><td>Imprime valores monetários com duas casas decimais e alinhamento.</td></tr>
+<tr><td class='num'>70</td><td class='code'>           r.nome, r.bruto, r.extras, r.inss, r.irrf, r.liquido);</td><td>Linha de implementação que compõe a lógica descrita no bloco atual.</td></tr>
+<tr><td class='num'>71</td><td class='code'>}</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>72</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>73</td><td class='code'>int main(void) {</td><td>Ponto de entrada do programa em C.</td></tr>
+<tr><td class='num'>74</td><td class='code'>    Funcionario funcionarios[] = {</td><td>Cria o array com os três funcionários do caso de teste.</td></tr>
+<tr><td class='num'>75</td><td class='code'>        {&quot;Ana&quot;, 4500.00, 2, 8},</td><td>Um funcionário de teste: nome, bruto, dependentes e horas extras.</td></tr>
+<tr><td class='num'>76</td><td class='code'>        {&quot;Bruno&quot;, 2200.00, 0, 0},</td><td>Um funcionário de teste: nome, bruto, dependentes e horas extras.</td></tr>
+<tr><td class='num'>77</td><td class='code'>        {&quot;Carla&quot;, 1300.00, 1, 4}</td><td>Um funcionário de teste: nome, bruto, dependentes e horas extras.</td></tr>
+<tr><td class='num'>78</td><td class='code'>    };</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>79</td><td class='code'>    size_t quantidade = sizeof(funcionarios) / sizeof(funcionarios[0]);</td><td>Calcula automaticamente quantos funcionários existem no array.</td></tr>
+<tr><td class='num'>80</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>81</td><td class='code'>    double total = 0.0;</td><td>Inicializa o acumulador do total da folha.</td></tr>
+<tr><td class='num'>82</td><td class='code'>    Resultado maior = calcular_funcionario(&amp;funcionarios[0]);</td><td>Inicializa o maior salário líquido com o primeiro funcionário.</td></tr>
+<tr><td class='num'>83</td><td class='code'>    Resultado menor = maior;</td><td>Inicializa o menor salário líquido com o mesmo primeiro resultado.</td></tr>
+<tr><td class='num'>84</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>85</td><td class='code'>    puts(&quot;Folha de pagamento - paradigma imperativo (C)&quot;);</td><td>Exibe texto simples de cabeçalho ou política de cálculo.</td></tr>
+<tr><td class='num'>86</td><td class='code'>    puts(&quot;Politica: valores monetarios exibidos com 2 casas decimais; calculos internos usam double.\n&quot;);</td><td>Exibe texto simples de cabeçalho ou política de cálculo.</td></tr>
+<tr><td class='num'>87</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>88</td><td class='code'>    for (size_t i = 0; i &lt; quantidade; i++) {</td><td>Percorre todos os elementos de um array usando índice.</td></tr>
+<tr><td class='num'>89</td><td class='code'>        Resultado atual = calcular_funcionario(&amp;funcionarios[i]);</td><td>Calcula o resultado do funcionário atual do laço.</td></tr>
+<tr><td class='num'>90</td><td class='code'>        imprimir_resultado(atual);</td><td>Função de apresentação: imprime um resultado formatado.</td></tr>
+<tr><td class='num'>91</td><td class='code'>        total += atual.liquido;</td><td>Soma o líquido atual ao total da folha.</td></tr>
+<tr><td class='num'>92</td><td class='code'>        if (atual.liquido &gt; maior.liquido) maior = atual;</td><td>Atualiza o maior líquido se o funcionário atual superar o maior salvo.</td></tr>
+<tr><td class='num'>93</td><td class='code'>        if (atual.liquido &lt; menor.liquido) menor = atual;</td><td>Atualiza o menor líquido se o funcionário atual for menor que o salvo.</td></tr>
+<tr><td class='num'>94</td><td class='code'>    }</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+<tr><td class='num'>95</td><td class='code'>&nbsp;</td><td>Linha em branco usada para separar blocos e melhorar a leitura.</td></tr>
+<tr><td class='num'>96</td><td class='code'>    printf(&quot;\nTotal da folha: %.2f\n&quot;, total);</td><td>Imprime valores monetários com duas casas decimais e alinhamento.</td></tr>
+<tr><td class='num'>97</td><td class='code'>    printf(&quot;Maior salario liquido: %s (%.2f)\n&quot;, maior.nome, maior.liquido);</td><td>Imprime valores monetários com duas casas decimais e alinhamento.</td></tr>
+<tr><td class='num'>98</td><td class='code'>    printf(&quot;Menor salario liquido: %s (%.2f)\n&quot;, menor.nome, menor.liquido);</td><td>Imprime valores monetários com duas casas decimais e alinhamento.</td></tr>
+<tr><td class='num'>99</td><td class='code'>    return 0;</td><td>Encerra o programa informando sucesso ao sistema operacional.</td></tr>
+<tr><td class='num'>100</td><td class='code'>}</td><td>Fecha ou organiza o bloco iniciado anteriormente.</td></tr>
+</tbody></table><h2>Resumo para apresentação oral</h2><div class='card'>Explique que C deixa o fluxo claro: define estruturas, percorre arrays com for, usa acumuladores para total e comparações para maior/menor. O ponto de atenção é gerenciar manualmente índices, arrays e mutação.</div></body></html>

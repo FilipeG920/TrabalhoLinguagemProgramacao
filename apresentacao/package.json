@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dev": "slidev slides.md --open",
+    "build": "slidev build slides.md --out dist",
+    "export": "slidev export slides.md --output apresentacao-folha-pagamento.pdf"
+  },
+  "dependencies": {
+    "@slidev/cli": "52.15.2",
+    "@slidev/theme-seriph": "0.25.0",
+    "playwright-chromium": "latest",
+    "shiki": "4.1.0"
+  }
+}
